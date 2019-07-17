@@ -11,6 +11,7 @@ In the face of these challenges, I found a way to bring twitter data from the pa
 ## Prerequisites
 ```R
 library(rtweet)
+library(rvest)
 library(jsonlite)
 ```
 
@@ -36,6 +37,7 @@ searchTerm <- "donald trump"
 ## Examples of R usage
 ```R
 library(rtweet)
+library(rvest)
 library(jsonlite)
 
 create_token(
@@ -57,19 +59,34 @@ temp_url <- paste0("https://twitter.com/i/search/timeline?f=tweets&q=",searchbox
 webpage <- fromJSON(temp_url)
 if(webpage$new_latent_count>0){
   tweet_ids <- read_html(webpage$items_html) %>% html_nodes('.js-stream-tweet') %>% html_attr('data-tweet-id')
+  breakFlag <- F
   while (webpage$has_more_items == T) {
-    min_position <- webpage$min_position
-    next_url <- paste0(temp_url, min_position)
-    webpage <- fromJSON(next_url)
-    next_tweet_ids <- read_html(webpage$items_html) %>% html_nodes('.js-stream-tweet') %>% html_attr('data-tweet-id')
-    next_tweet_ids <- next_tweet_ids[!is.na(next_tweet_ids)]
-    tweet_ids <- unique(c(tweet_ids,next_tweet_ids))
-    if(length(tweet_ids) >= ntweets)
-    {
+    tryCatch({
+      min_position <- webpage$min_position
+      next_url <- paste0(temp_url, min_position)
+      webpage <- fromJSON(next_url)
+      next_tweet_ids <- read_html(webpage$items_html) %>% html_nodes('.js-stream-tweet') %>% html_attr('data-tweet-id')
+      next_tweet_ids <- next_tweet_ids[!is.na(next_tweet_ids)]
+      tweet_ids <- unique(c(tweet_ids,next_tweet_ids))
+      if(length(tweet_ids) >= ntweets)
+      {
+        breakFlag <- T
+      }
+    },
+    error=function(cond) {
+      message(paste("URL does not seem to exist:", next_url))
+      message("Here's the original error message:")
+      message(cond)
+      breakFlag <<- T
+    })
+    
+    if(breakFlag == T){
       break
     }
   }
-  reactiveDF$tweets <- lookup_tweets(tweet_ids, parse = TRUE, token = NULL)
+  tweets <- lookup_tweets(tweet_ids, parse = TRUE, token = NULL)
+  df <- apply(tweets,2,as.character)
+  write.csv(df, file = "tweets.csv", row.names = F)
 } else {
   paste0("There is no tweet about this search term!")
 }
