@@ -28,6 +28,7 @@ create_token(
 ```R
 startdate =  "2014-01-01" # A lower bound date to restrict search.
 enddate = "2015-01-01"    # An upper bound date to restrist search.
+language = "en"           # Tweets in a specific language to restrist search.
 ntweets = 1000            # The maximum number of tweets to be retrieved
 searchTerm <- "donald trump"
 ``` 
@@ -47,11 +48,12 @@ create_token(
 # Input parameters
 startdate =  "2014-01-01"
 enddate = "2015-01-01"
+language = "en"
 ntweets = 1000
 searchTerm <- "donald trump"
 searchbox <- URLencode(searchTerm)
 # convert to url
-temp_url <- paste0("https://twitter.com/i/search/timeline?f=tweets&q=",searchbox,"%20since%3A",startdate,"%20until%3A",enddate,"&l=tr&src=typd&max_position=")
+temp_url <- paste0("https://twitter.com/i/search/timeline?f=tweets&q=",searchbox,"%20since%3A",startdate,"%20until%3A",enddate,"&l=",language,"&src=typd&max_position=")
 webpage <- fromJSON(temp_url)
 if(webpage$new_latent_count>0){
   tweet_ids <- read_html(webpage$items_html) %>% html_nodes('.js-stream-tweet') %>% html_attr('data-tweet-id')
