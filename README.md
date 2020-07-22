@@ -27,11 +27,12 @@ create_token(
 
 ## Input parameters
 ```R
-startdate =  "2014-01-01" # A lower bound date to restrict search.
-enddate = "2015-01-01"    # An upper bound date to restrist search.
+startdate =  "2020-06-01" # A lower bound date to restrict search.
+enddate = "2020-07-01"    # An upper bound date to restrist search.
 language = "en"           # Tweets in a specific language to restrist search.
 ntweets = 1000            # The maximum number of tweets to be retrieved
 searchTerm <- "donald trump"
+searchTerm <- "(from%3ArealDonaldTrump)" # for user search
 ``` 
 
 ## Examples of R usage
@@ -51,8 +52,9 @@ create_token(
 startdate =  "2014-01-01"
 enddate = "2015-01-01"
 language = "en"
-ntweets = 1000
+ntweets = 100
 searchTerm <- "donald trump"
+# searchTerm <- "(from%3ArealDonaldTrump)" # for user search
 searchbox <- URLencode(searchTerm)
 # convert to url
 temp_url <- paste0("https://twitter.com/i/search/timeline?f=tweets&q=",searchbox,"%20since%3A",startdate,"%20until%3A",enddate,"&l=",language,"&src=typd&max_position=")
@@ -85,8 +87,8 @@ if(webpage$new_latent_count>0){
     }
   }
   tweets <- lookup_tweets(tweet_ids, parse = TRUE, token = NULL)
-  df <- apply(tweets,2,as.character)
-  write.csv(df, file = "tweets.csv", row.names = F)
+  # df <- apply(tweets,2,as.character)
+  # write.csv(df, file = "tweets.csv", row.names = F)
 } else {
   paste0("There is no tweet about this search term!")
 }
