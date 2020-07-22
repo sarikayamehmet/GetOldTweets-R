@@ -35,6 +35,18 @@ searchTerm <- "donald trump"
 searchTerm <- "(from%3ArealDonaldTrump)" # for user search
 ``` 
 
+## Add source filter
+```R
+searchTerm <- "donald trump"
+searchbox <- URLencode(searchTerm)
+# For iPhone only use below
+searchbox <- paste0(searchbox,"%20AND%20source%3A\"Twitter%20for%20iPhone\"")
+# For Android only use below
+searchbox <- paste0(searchbox,"%20AND%20source%3A\"Twitter%20for%20Android\"")
+# For Web App only use below
+searchbox <- paste0(searchbox,"%20AND%20source%3A\"Twitter%20Web%20App\"")
+``` 
+
 ## Examples of R usage
 ```R
 library(rtweet)
